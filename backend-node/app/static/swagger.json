@@ -9,12 +9,7 @@
       "email": "support@example.com"
     }
   },
-  "servers": [
-    {
-      "url": "http://localhost:5000",
-      "description": "Development server"
-    }
-  ],
+  
   "components": {
     "securitySchemes": {
       "bearerAuth": {
