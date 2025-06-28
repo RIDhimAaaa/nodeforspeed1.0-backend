@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Flask Authentication API",
-    "description": "Comprehensive REST API for user authentication and management",
+    "title": "Memory Decay Notepad API",
+    "description": "REST API for Memory Decay Notepad - Notes decay over time unless reviewed. AI helps you revise. Only attention keeps memory alive.",
     "version": "1.0.0",
     "contact": {
       "name": "API Support",
@@ -25,25 +25,40 @@
           "id": {"type": "integer"},
           "username": {"type": "string"},
           "email": {"type": "string"},
-          "first_name": {"type": "string"},
-          "last_name": {"type": "string"},
-          "phone": {"type": "string"},
-          "is_active": {"type": "boolean"},
           "is_verified": {"type": "boolean"},
+          "created_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "Note": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "title": {"type": "string"},
+          "content": {"type": "string"},
+          "decay_minutes": {"type": "integer"},
+          "original_decay_minutes": {"type": "integer"},
+          "last_revised": {"type": "string", "format": "date-time"},
+          "status": {"type": "string", "enum": ["active", "archived", "revived"]},
+          "expires_at": {"type": "string", "format": "date-time"},
+          "time_remaining_seconds": {"type": "integer"},
+          "is_expired": {"type": "boolean"},
+          "ai_summary": {"type": "string"},
+          "ai_questions": {"type": "array", "items": {"type": "string"}},
+          "wrong_answers_count": {"type": "integer"},
+          "penalty_applied": {"type": "boolean"},
+          "penalty_percentage": {"type": "number"},
           "created_at": {"type": "string", "format": "date-time"},
-          "updated_at": {"type": "string", "format": "date-time"}
+          "archived_at": {"type": "string", "format": "date-time"},
+          "revived_at": {"type": "string", "format": "date-time"}
         }
       },
       "UserRegistration": {
         "type": "object",
-        "required": ["username", "email", "password", "first_name", "last_name"],
+        "required": ["username", "email", "password"],
         "properties": {
           "username": {"type": "string", "minLength": 3},
           "email": {"type": "string", "format": "email"},
-          "password": {"type": "string", "minLength": 8},
-          "first_name": {"type": "string"},
-          "last_name": {"type": "string"},
-          "phone": {"type": "string"}
+          "password": {"type": "string", "minLength": 8}
         }
       },
       "UserLogin": {

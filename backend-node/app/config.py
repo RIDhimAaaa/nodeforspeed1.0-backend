@@ -30,3 +30,16 @@ class Config:
     JWT_TOKEN_LOCATION = ["headers"]
     JWT_HEADER_NAME = "Authorization"
     JWT_HEADER_TYPE = "Bearer"
+
+    # Gemini AI Configuration
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+    
+    # Note decay settings
+    DEFAULT_DECAY_MINUTES = 1440  # 24 hours
+    MAX_DECAY_MINUTES = 10080     # 1 week
+    MIN_DECAY_MINUTES = 1         # 1 minute
+    
+    # Penalty system settings
+    PENALTY_PERCENTAGE_PER_WRONG_ANSWER = 0.125  # 12.5% reduction per wrong answer
+    MAX_PENALTY_PERCENTAGE = 0.625  # Maximum 62.5% reduction
+    MIN_DECAY_AFTER_PENALTY = 30  # Minimum 30 minutes even with max penalties

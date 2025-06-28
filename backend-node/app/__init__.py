@@ -55,14 +55,14 @@ def create_app():
     
     # Configure Swagger UI
     SWAGGER_URL = '/api/docs'
-    API_URL = '/static/swagger.json'
+    API_URL = '/static/swagger_memory_decay.json'
     
     # Create Swagger UI blueprint
     swaggerui_blueprint = get_swaggerui_blueprint(
         SWAGGER_URL,
         API_URL,
         config={
-            'app_name': "Node Backend Flask Auth API",
+            'app_name': "Memory Decay Notepad API",
             'oauth2RedirectUrl': f"{Config.FRONTEND_URL}/oauth2-redirect.html"
         }
     )
@@ -77,7 +77,10 @@ def create_app():
     
     # Register blueprints
     from .auth import auth_bp
+    from .notes import notes_bp
+    
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    app.register_blueprint(notes_bp, url_prefix='/api/notes')
 
     with app.app_context():
         db.create_all()
