@@ -1,6 +1,8 @@
 const ArchivedNoteCard = ({ note, onRevive }) => {
   const formatDate = (timestamp) => {
-    return new Date(timestamp).toLocaleDateString("en-US", {
+    // Ensure timestamp is properly converted to Date
+    const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp
+    return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       hour: "2-digit",

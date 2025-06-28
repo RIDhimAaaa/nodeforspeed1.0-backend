@@ -2,8 +2,6 @@ import { Link } from "react-router-dom"
 import NoteCard from "../components/NoteCard"
 
 const Dashboard = ({ notes, onRevise }) => {
-  const sortedNotes = [...notes].sort((a, b) => a.expiresAt - b.expiresAt)
-
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-10">
@@ -35,7 +33,7 @@ const Dashboard = ({ notes, onRevise }) => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
-          {sortedNotes.map((note) => (
+          {notes.map((note) => (
             <NoteCard key={note.id} note={note} onRevise={onRevise} />
           ))}
         </div>

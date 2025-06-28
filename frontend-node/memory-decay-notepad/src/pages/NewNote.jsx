@@ -8,6 +8,8 @@ const NewNote = ({ onAddNote }) => {
     content: "",
     decayTime: 5 * 60 * 1000, // 5 minutes default
   })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const decayOptions = [
     { label: "5 minutes", value: 5 * 60 * 1000 },
@@ -17,11 +19,19 @@ const NewNote = ({ onAddNote }) => {
     { label: "1 day", value: 24 * 60 * 60 * 1000 },
   ]
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (formData.title.trim() && formData.content.trim()) {
-      onAddNote(formData)
-      navigate("/dashboard")
+    setIsLoading(true)
+    setError("")
+    try {
+      if (formData.title.trim() && formData.content.trim()) {
+        await onAddNote(formData)
+        navigate("/dashboard")
+      }
+    } catch (err) {
+      setError(err.message || "Failed to create note")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -55,6 +65,7 @@ const NewNote = ({ onAddNote }) => {
               className="w-full px-6 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-lg"
               placeholder="Enter note title..."
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -71,6 +82,7 @@ const NewNote = ({ onAddNote }) => {
               className="w-full px-6 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none text-lg"
               placeholder="Enter your note content..."
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -84,6 +96,7 @@ const NewNote = ({ onAddNote }) => {
               value={formData.decayTime}
               onChange={handleChange}
               className="w-full px-6 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors text-lg"
+              disabled={isLoading}
             >
               {decayOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -93,17 +106,21 @@ const NewNote = ({ onAddNote }) => {
             </select>
           </div>
 
+          {error && <div className="text-red-600 text-center">{error}</div>}
+
           <div className="flex space-x-6 pt-6">
             <button
               type="submit"
               className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-4 px-8 rounded-lg font-medium transition-colors duration-200 text-lg"
+              disabled={isLoading}
             >
-              Create Note
+              {isLoading ? "Creating..." : "Create Note"}
             </button>
             <button
               type="button"
               onClick={() => navigate("/dashboard")}
               className="px-8 py-4 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200 text-lg"
+              disabled={isLoading}
             >
               Cancel
             </button>

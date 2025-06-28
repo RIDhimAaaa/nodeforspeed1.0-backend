@@ -14,6 +14,9 @@ export default {
         'none': 'none',
         'full': '100%',
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
     },
   },
   plugins: [],

@@ -1,87 +1,104 @@
-# 🧠 Memory Decay Notepad
+# Memory Decay Notepad - Integrated Application
 
-A React + Vite application that implements the memory decay principle to help users retain information through spaced repetition and timed reviews.
+A React + Vite application that combines authentication with a memory decay notepad system. Users can sign up, verify their email, and access a protected dashboard for creating and managing notes with automatic decay functionality.
 
-## ✨ Features
+## Features
 
-- **📝 Create Notes**: Add notes with customizable decay timers
-- **⏰ Automatic Expiration**: Notes automatically expire based on their decay timer
-- **🔄 Revision System**: Extend note life by answering review questions
-- **📦 Archive Management**: Expired notes are moved to archive for later revival
-- **🎨 Beautiful UI**: Clean, responsive design with smooth animations
-- **💾 Local Storage**: All data is saved locally in the browser
+### Authentication
+- **User Registration**: Sign up with email verification
+- **User Login**: Secure authentication with JWT tokens
+- **Email Verification**: Required for account activation
+- **Protected Routes**: All notepad features require authentication
+- **User Profile**: Display user information in navigation
 
-## 🚀 Getting Started
+### Memory Decay Notepad
+- **Dashboard**: View all active notes with countdown timers
+- **Create Notes**: Add new notes with custom decay times
+- **Archive**: View expired notes that can be revived
+- **Revise Notes**: Extend the decay time of existing notes
+- **Automatic Expiration**: Notes automatically move to archive when expired
 
-### Prerequisites
-
-- Node.js (version 16 or higher)
-- npm or yarn
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <your-repo-url>
-   cd memory-decay-notepad
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-4. **Open your browser**
-   Navigate to `http://localhost:5173`
-
-## 📱 Usage
-
-### Creating Notes
-1. Click "New Note" or the "+" button
-2. Enter a title and content
-3. Select a decay timer (5 minutes to 1 day)
-4. Click "Create Note"
-
-### Managing Notes
-- **Dashboard**: View all active notes sorted by expiration time
-- **Quick Extend**: Click "+30m" to extend a note by 30 minutes
-- **Revise**: Click "Revise" to answer questions and extend note life
-
-### Archive
-- Expired notes automatically move to the archive
-- Click "Revive" to bring a note back to active status
-- Revived notes get a 30-minute default timer
-
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Frontend**: React 18 + Vite
 - **Routing**: React Router DOM
 - **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **Storage**: Local Storage API
+- **Authentication**: JWT tokens with backend API
+- **Backend**: Flask API (deployed on Railway)
 
-## 📁 Project Structure
+## Getting Started
+
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Start Development Server**:
+   ```bash
+   npm run dev
+   ```
+
+3. **Build for Production**:
+   ```bash
+   npm run build
+   ```
+
+## Application Flow
+
+1. **Initial Access**: Users land on `/auth` for login/signup
+2. **Authentication**: After successful login, users are redirected to `/dashboard`
+3. **Protected Features**: All notepad functionality requires authentication
+4. **Logout**: Users can logout and return to auth page
+
+## API Integration
+
+The application integrates with the backend API at:
+`https://nodeforspeed10-backend-production.up.railway.app/api`
+
+### Key Endpoints Used:
+- `POST /auth/signup` - User registration
+- `POST /auth/login` - User authentication
+- `POST /auth/refresh` - Token refresh
+- `POST /auth/resend-verification` - Email verification resend
+
+## File Structure
 
 ```
 src/
 ├── components/
-│   ├── Navigation.jsx      # Main navigation bar
-│   ├── NoteCard.jsx        # Individual note display
+│   ├── AuthForms.jsx      # Authentication forms
+│   ├── Navigation.jsx     # Main navigation with logout
+│   ├── NoteCard.jsx       # Individual note display
 │   └── ArchivedNoteCard.jsx # Archived note display
 ├── pages/
-│   ├── Dashboard.jsx       # Main dashboard view
-│   ├── NewNote.jsx         # Create new note form
-│   ├── Archive.jsx         # Archived notes view
-│   └── Revise.jsx          # Note revision interface
-├── App.jsx                 # Main application component
-├── App.css                 # Global styles
-└── main.jsx               # Application entry point
+│   ├── Dashboard.jsx      # Main dashboard view
+│   ├── NewNote.jsx        # Create new note
+│   ├── Archive.jsx        # View archived notes
+│   └── Revise.jsx         # Revise existing notes
+├── services/
+│   └── api.js            # API service for backend communication
+├── App.jsx               # Main app with routing and auth
+└── main.jsx              # App entry point
 ```
+
+## Design Features
+
+- **Full-Width Layout**: Optimized for maximum screen usage
+- **Responsive Design**: Works on all device sizes
+- **Animated Background**: Dynamic orange-themed animations for auth forms
+- **Modern UI**: Clean, intuitive interface with smooth transitions
+- **Toast Notifications**: User feedback for actions
+
+## Security Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **Protected Routes**: Automatic redirection for unauthenticated users
+- **Token Management**: Automatic token storage and cleanup
+- **Email Verification**: Required account verification process
+
+## Deployment
+
+The application is ready for deployment to platforms like Vercel, Netlify, or any static hosting service. The build process creates optimized production files in the `dist/` directory.
 
 ## 🎯 Memory Decay Principle
 
@@ -107,14 +124,6 @@ The app uses Tailwind CSS for styling. You can customize:
 - Colors in `tailwind.config.js`
 - Component styles in individual files
 - Global styles in `App.css`
-
-## 📦 Build for Production
-
-```bash
-npm run build
-```
-
-The built files will be in the `dist/` directory.
 
 ## 🤝 Contributing
 
