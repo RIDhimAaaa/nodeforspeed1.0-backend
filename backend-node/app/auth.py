@@ -41,7 +41,28 @@ def signup():
 
     token = generate_confirmation_token(new_user.email)
     verify_url = url_for('auth.verify_email', token=token, _external=True)
-    html_body = f"<p>Welcome! Thanks for signing up. Please follow this link to activate your account:</p><p><a href='{verify_url}'>{verify_url}</a></p>"
+    html_body = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">Welcome to Our Platform!</h2>
+        <p>Hello {new_user.username},</p>
+        <p>Thank you for signing up! To complete your registration, please verify your email address by clicking the button below:</p>
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{verify_url}" 
+               style="background-color: #007bff; color: white; padding: 12px 24px; 
+                      text-decoration: none; border-radius: 5px; display: inline-block;">
+                Verify Email Address
+            </a>
+        </div>
+        <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+        <p style="word-break: break-all; color: #666;">{verify_url}</p>
+        <p>This verification link will expire in 1 hour.</p>
+        <p>If you didn't create an account, you can safely ignore this email.</p>
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+        <p style="color: #666; font-size: 12px;">
+            This is an automated message, please do not reply to this email.
+        </p>
+    </div>
+    """
     send_email(new_user.email, "Please confirm your email", html_body)
 
     return jsonify({"message": "User created. Please check your email to verify your account."}), 201
@@ -62,6 +83,53 @@ def verify_email(token):
         user.is_verified = True
         db.session.commit()
         return jsonify({"message": "You have successfully verified your account. Thanks!"}), 200
+
+
+@auth_bp.route('/resend-verification', methods=['POST'])
+def resend_verification():
+    data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+    
+    user = User.query.filter_by(email=email).first()
+    
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    
+    if user.is_verified:
+        return jsonify({"error": "Account is already verified"}), 400
+    
+    # Generate new verification token
+    token = generate_confirmation_token(user.email)
+    verify_url = url_for('auth.verify_email', token=token, _external=True)
+    
+    # Send verification email
+    html_body = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">Email Verification</h2>
+        <p>Hello {user.username},</p>
+        <p>Please click the button below to verify your email address:</p>
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{verify_url}" 
+               style="background-color: #007bff; color: white; padding: 12px 24px; 
+                      text-decoration: none; border-radius: 5px; display: inline-block;">
+                Verify Email Address
+            </a>
+        </div>
+        <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+        <p style="word-break: break-all; color: #666;">{verify_url}</p>
+        <p>This link will expire in 1 hour.</p>
+        <p>If you didn't create an account, you can safely ignore this email.</p>
+    </div>
+    """
+    
+    try:
+        send_email(user.email, "Verify Your Email Address", html_body)
+        return jsonify({"message": "Verification email sent successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": "Failed to send verification email"}), 500
 
 
 @auth_bp.route('/login', methods=['POST'])

@@ -120,6 +120,14 @@ class ApiService {
   isAuthenticated() {
     return !!localStorage.getItem('access_token');
   }
+
+  // Resend verification email
+  async resendVerification(email) {
+    return this.makeRequest('/auth/resend-verification', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  }
 }
 
 export const apiService = new ApiService();
