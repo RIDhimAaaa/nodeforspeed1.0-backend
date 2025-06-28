@@ -8,23 +8,50 @@ from sqlalchemy import or_
 
 notes_bp = Blueprint('notes', __name__)
 
+def auto_archive_expired_notes(user_id):
+    """Automatically archive expired notes for a user"""
+    try:
+        expired_notes = Note.query.filter_by(
+            user_id=user_id, 
+            status=NoteStatus.ACTIVE
+        ).all()
+        
+        archived_count = 0
+        for note in expired_notes:
+            if note.is_expired:
+                # Generate AI content before archiving if not present
+                if not note.ai_summary or not note.ai_questions:
+                    try:
+                        ai_result = gemini_service.generate_summary_and_questions(
+                            note.title, note.content
+                        )
+                        note.ai_summary = ai_result['summary']
+                        note.ai_questions = ai_result['questions']
+                    except Exception as e:
+                        print(f"⚠️ Failed to generate AI content for note {note.id}: {e}")
+                        pass  # Continue even if AI fails
+                
+                note.archive()
+                archived_count += 1
+                print(f"📦 Auto-archived expired note: {note.title}")
+        
+        if archived_count > 0:
+            db.session.commit()
+            print(f"✅ Auto-archived {archived_count} expired notes for user {user_id}")
+        
+        return archived_count
+    except Exception as e:
+        print(f"❌ Error in auto-archive: {e}")
+        return 0
+
 @notes_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_notes():
     """Get all active notes for user, archive expired ones"""
     user_id = get_jwt_identity()
     
-    # First, archive any expired notes
-    expired_notes = Note.query.filter_by(
-        user_id=user_id, 
-        status=NoteStatus.ACTIVE
-    ).all()
-    
-    for note in expired_notes:
-        if note.is_expired:
-            note.archive()
-    
-    db.session.commit()
+    # Auto-archive expired notes
+    auto_archive_expired_notes(user_id)
     
     # Get all active notes
     notes = Note.query.filter_by(
@@ -41,6 +68,10 @@ def get_notes():
 def create_note():
     """Create a new note"""
     user_id = get_jwt_identity()
+    
+    # Auto-archive expired notes before creating new one
+    auto_archive_expired_notes(user_id)
+    
     data = request.get_json()
     
     title = data.get('title', '').strip()
@@ -74,6 +105,9 @@ def create_note():
 def get_note(note_id):
     """Get specific note and update last_revised (touching the note)"""
     user_id = get_jwt_identity()
+    
+    # Auto-archive expired notes first
+    auto_archive_expired_notes(user_id)
     
     note = Note.query.filter_by(id=note_id, user_id=user_id).first()
     if not note:
@@ -301,6 +335,9 @@ def delete_note(note_id):
 def get_stats():
     """Get user's note statistics"""
     user_id = get_jwt_identity()
+    
+    # Auto-archive expired notes before calculating stats
+    auto_archive_expired_notes(user_id)
     
     active_count = Note.query.filter_by(user_id=user_id, status=NoteStatus.ACTIVE).count()
     archived_count = Note.query.filter_by(user_id=user_id, status=NoteStatus.ARCHIVED).count()
