@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom"
 
 const NoteCard = ({ note, onRevise }) => {
-  const expiresAt = typeof note.expiresAt === 'string' ? new Date(note.expiresAt) : note.expiresAt
-  const timeRemaining = expiresAt.getTime() - Date.now()
+  const timeRemaining = note.expiresAt - Date.now()
   const isExpiringSoon = timeRemaining < 5 * 60 * 1000 // Less than 5 minutes
 
   const formatTimeRemaining = (ms) => {

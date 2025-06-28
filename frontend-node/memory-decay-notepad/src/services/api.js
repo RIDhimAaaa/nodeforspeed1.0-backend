@@ -23,22 +23,7 @@ class ApiService {
     }
 
     try {
-      console.log('Making API request to:', url);
       const response = await fetch(url, config);
-      
-      // Log response details for debugging
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-      
-      // Check if response is JSON
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        // If not JSON, get the text and log it
-        const text = await response.text();
-        console.error('Non-JSON response received:', text.substring(0, 200));
-        throw new Error(`Expected JSON response but got ${contentType}. Server may be down or URL incorrect.`);
-      }
-
       const data = await response.json();
 
       if (!response.ok) {
@@ -48,8 +33,6 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('API request failed:', error);
-      console.error('Request URL:', url);
-      console.error('Request config:', config);
       throw error;
     }
   }
